@@ -1,0 +1,1296 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TechLab Carolina – Riparazioni & Vendita Cellulari</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --blue: #00aaff;
+    --blue-dark: #0077cc;
+    --blue-glow: #00cfff;
+    --bg: #050a10;
+    --bg2: #080f18;
+    --bg3: #0d1a28;
+    --text: #e8f4ff;
+    --text-dim: #7ba8c8;
+    --accent: #00e5ff;
+    --silver: #c0d8f0;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Rajdhani', sans-serif;
+    overflow-x: hidden;
+    cursor: none;
+  }
+
+  /* CUSTOM CURSOR */
+  .cursor {
+    width: 12px; height: 12px;
+    background: var(--blue-glow);
+    border-radius: 50%;
+    position: fixed;
+    pointer-events: none;
+    z-index: 9999;
+    transform: translate(-50%, -50%);
+    transition: transform 0.1s, width 0.2s, height 0.2s;
+    box-shadow: 0 0 15px var(--blue-glow), 0 0 30px var(--blue);
+    mix-blend-mode: screen;
+  }
+  .cursor-ring {
+    width: 36px; height: 36px;
+    border: 1.5px solid var(--blue);
+    border-radius: 50%;
+    position: fixed;
+    pointer-events: none;
+    z-index: 9998;
+    transform: translate(-50%, -50%);
+    transition: transform 0.18s ease, width 0.2s, height 0.2s, border-color 0.2s;
+    opacity: 0.6;
+  }
+  .cursor.hover { width: 20px; height: 20px; }
+  .cursor-ring.hover { width: 52px; height: 52px; border-color: var(--accent); opacity: 1; }
+
+  /* NOISE OVERLAY */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.4;
+  }
+
+  /* NAV */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0;
+    z-index: 100;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 40px;
+    height: 70px;
+    background: rgba(5,10,16,0.85);
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid rgba(0,170,255,0.15);
+  }
+  .nav-logo {
+    font-family: 'Orbitron', monospace;
+    font-weight: 900;
+    font-size: 1.1rem;
+    letter-spacing: 2px;
+    background: linear-gradient(90deg, #fff 30%, var(--blue-glow));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  .nav-logo span { color: var(--blue); -webkit-text-fill-color: var(--blue); }
+  .nav-links { display: flex; gap: 36px; list-style: none; }
+  .nav-links a {
+    font-size: 0.85rem;
+    font-weight: 600;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    text-decoration: none;
+    transition: color 0.2s;
+    position: relative;
+  }
+  .nav-links a::after {
+    content: '';
+    position: absolute; bottom: -4px; left: 0;
+    width: 0; height: 1px;
+    background: var(--blue-glow);
+    transition: width 0.3s;
+  }
+  .nav-links a:hover { color: var(--accent); }
+  .nav-links a:hover::after { width: 100%; }
+  .nav-cta {
+    background: transparent;
+    border: 1.5px solid var(--blue);
+    color: var(--blue);
+    font-family: 'Orbitron', monospace;
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    padding: 10px 22px;
+    cursor: none;
+    text-decoration: none;
+    transition: all 0.3s;
+    clip-path: polygon(8px 0%, 100% 0%, calc(100% - 8px) 100%, 0% 100%);
+  }
+  .nav-cta:hover {
+    background: var(--blue);
+    color: #000;
+    box-shadow: 0 0 30px rgba(0,170,255,0.5);
+  }
+
+  /* HERO */
+  .hero {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    position: relative;
+    overflow: hidden;
+    padding: 100px 40px 60px;
+  }
+  .hero-grid {
+    position: absolute; inset: 0;
+    background-image:
+      linear-gradient(rgba(0,170,255,0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,170,255,0.04) 1px, transparent 1px);
+    background-size: 60px 60px;
+    animation: gridShift 20s linear infinite;
+  }
+  @keyframes gridShift {
+    0% { background-position: 0 0; }
+    100% { background-position: 60px 60px; }
+  }
+  .hero-glow {
+    position: absolute;
+    width: 600px; height: 600px;
+    background: radial-gradient(circle, rgba(0,170,255,0.12) 0%, transparent 70%);
+    top: 50%; left: 60%;
+    transform: translate(-50%, -50%);
+    animation: pulse 4s ease-in-out infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { transform: translate(-50%, -50%) scale(1); opacity: 0.6; }
+    50% { transform: translate(-50%, -50%) scale(1.2); opacity: 1; }
+  }
+  .hero-content { position: relative; z-index: 2; max-width: 700px; }
+  .hero-eyebrow {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.75rem;
+    color: var(--blue);
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    margin-bottom: 20px;
+    opacity: 0;
+    animation: fadeUp 0.8s 0.2s forwards;
+  }
+  .hero-title {
+    font-family: 'Orbitron', monospace;
+    font-weight: 900;
+    font-size: clamp(2.8rem, 7vw, 5.5rem);
+    line-height: 1.05;
+    margin-bottom: 10px;
+    opacity: 0;
+    animation: fadeUp 0.8s 0.4s forwards;
+  }
+  .hero-title .white { color: #fff; }
+  .hero-title .blue {
+    background: linear-gradient(90deg, var(--blue), var(--blue-glow));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  .hero-sub {
+    font-family: 'Orbitron', monospace;
+    font-weight: 400;
+    font-size: clamp(1rem, 2.5vw, 1.4rem);
+    color: var(--text-dim);
+    letter-spacing: 4px;
+    margin-bottom: 30px;
+    border-left: 3px solid var(--blue);
+    padding-left: 16px;
+    opacity: 0;
+    animation: fadeUp 0.8s 0.6s forwards;
+  }
+  .hero-desc {
+    font-size: 1.1rem;
+    color: var(--text-dim);
+    line-height: 1.7;
+    max-width: 520px;
+    margin-bottom: 44px;
+    opacity: 0;
+    animation: fadeUp 0.8s 0.8s forwards;
+  }
+  .hero-btns {
+    display: flex; gap: 20px; flex-wrap: wrap;
+    opacity: 0;
+    animation: fadeUp 0.8s 1s forwards;
+  }
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .btn-primary {
+    display: inline-flex; align-items: center; gap: 10px;
+    background: linear-gradient(135deg, var(--blue-dark), var(--blue));
+    color: #fff;
+    font-family: 'Orbitron', monospace;
+    font-weight: 700;
+    font-size: 0.75rem;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    padding: 16px 34px;
+    text-decoration: none;
+    cursor: none;
+    clip-path: polygon(12px 0%, 100% 0%, calc(100% - 12px) 100%, 0% 100%);
+    transition: all 0.3s;
+    position: relative;
+    overflow: hidden;
+  }
+  .btn-primary::before {
+    content: '';
+    position: absolute;
+    top: 0; left: -100%;
+    width: 100%; height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.15), transparent);
+    transition: left 0.5s;
+  }
+  .btn-primary:hover::before { left: 100%; }
+  .btn-primary:hover { box-shadow: 0 0 40px rgba(0,170,255,0.6); transform: translateY(-2px); }
+  .btn-secondary {
+    display: inline-flex; align-items: center; gap: 10px;
+    background: transparent;
+    border: 1.5px solid rgba(0,170,255,0.4);
+    color: var(--text-dim);
+    font-family: 'Orbitron', monospace;
+    font-weight: 700;
+    font-size: 0.75rem;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    padding: 16px 34px;
+    text-decoration: none;
+    cursor: none;
+    clip-path: polygon(12px 0%, 100% 0%, calc(100% - 12px) 100%, 0% 100%);
+    transition: all 0.3s;
+  }
+  .btn-secondary:hover { border-color: var(--blue); color: var(--blue); background: rgba(0,170,255,0.05); }
+
+  /* STATS BAR */
+  .stats-bar {
+    position: relative; z-index: 2;
+    background: rgba(0,170,255,0.05);
+    border-top: 1px solid rgba(0,170,255,0.15);
+    border-bottom: 1px solid rgba(0,170,255,0.15);
+    padding: 28px 40px;
+    display: flex; justify-content: space-around; flex-wrap: wrap; gap: 20px;
+  }
+  .stat-item { text-align: center; }
+  .stat-num {
+    font-family: 'Orbitron', monospace;
+    font-size: 2rem;
+    font-weight: 900;
+    color: var(--blue-glow);
+    display: block;
+    text-shadow: 0 0 20px rgba(0,207,255,0.5);
+  }
+  .stat-label {
+    font-size: 0.75rem;
+    letter-spacing: 2px;
+    color: var(--text-dim);
+    text-transform: uppercase;
+  }
+
+  /* SECTIONS */
+  section { padding: 100px 40px; position: relative; }
+  .section-header { text-align: center; margin-bottom: 70px; }
+  .section-tag {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.7rem;
+    color: var(--blue);
+    letter-spacing: 5px;
+    text-transform: uppercase;
+    display: block;
+    margin-bottom: 16px;
+  }
+  .section-title {
+    font-family: 'Orbitron', monospace;
+    font-weight: 900;
+    font-size: clamp(1.8rem, 4vw, 2.8rem);
+    color: #fff;
+    margin-bottom: 16px;
+  }
+  .section-title span {
+    background: linear-gradient(90deg, var(--blue), var(--accent));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  .section-line {
+    width: 80px; height: 2px;
+    background: linear-gradient(90deg, var(--blue), transparent);
+    margin: 0 auto;
+  }
+
+  /* SERVICES */
+  .services-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 24px;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+  .service-card {
+    background: var(--bg2);
+    border: 1px solid rgba(0,170,255,0.12);
+    padding: 40px 32px;
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.4s, border-color 0.4s;
+    clip-path: polygon(0 0, calc(100% - 20px) 0, 100% 20px, 100% 100%, 20px 100%, 0 calc(100% - 20px));
+  }
+  .service-card::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: linear-gradient(135deg, rgba(0,170,255,0.06) 0%, transparent 60%);
+    opacity: 0;
+    transition: opacity 0.4s;
+  }
+  .service-card:hover { transform: translateY(-8px); border-color: rgba(0,170,255,0.4); }
+  .service-card:hover::before { opacity: 1; }
+  .service-icon {
+    font-size: 2.8rem;
+    margin-bottom: 24px;
+    display: block;
+    filter: drop-shadow(0 0 10px rgba(0,170,255,0.5));
+  }
+  .service-num {
+    position: absolute; top: 20px; right: 24px;
+    font-family: 'Orbitron', monospace;
+    font-size: 0.65rem;
+    color: rgba(0,170,255,0.3);
+    letter-spacing: 2px;
+  }
+  .service-title {
+    font-family: 'Orbitron', monospace;
+    font-weight: 700;
+    font-size: 1rem;
+    color: #fff;
+    margin-bottom: 14px;
+    letter-spacing: 1px;
+  }
+  .service-desc { font-size: 0.95rem; color: var(--text-dim); line-height: 1.7; }
+  .service-tags { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 20px; }
+  .service-tag {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 1px;
+    background: rgba(0,170,255,0.1);
+    border: 1px solid rgba(0,170,255,0.2);
+    color: var(--blue);
+    padding: 4px 10px;
+  }
+
+  /* MOTHERBOARD SECTION */
+  .motherboard-section {
+    background: var(--bg2);
+    border-top: 1px solid rgba(0,170,255,0.1);
+    border-bottom: 1px solid rgba(0,170,255,0.1);
+  }
+  .motherboard-inner {
+    max-width: 1100px; margin: 0 auto;
+    display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: center;
+  }
+  .motherboard-visual {
+    position: relative;
+  }
+  .mb-circuit {
+    width: 100%;
+    aspect-ratio: 1;
+    position: relative;
+  }
+  .mb-circuit svg { width: 100%; height: 100%; }
+  .motherboard-content .section-header { text-align: left; margin-bottom: 36px; }
+  .motherboard-content .section-line { margin: 0; }
+  .level-list { list-style: none; margin-top: 30px; }
+  .level-item {
+    display: flex; gap: 20px; align-items: flex-start;
+    padding: 18px 0;
+    border-bottom: 1px solid rgba(0,170,255,0.08);
+  }
+  .level-badge {
+    font-family: 'Orbitron', monospace;
+    font-size: 0.6rem;
+    font-weight: 700;
+    background: linear-gradient(135deg, var(--blue-dark), var(--blue));
+    color: #fff;
+    padding: 6px 12px;
+    letter-spacing: 2px;
+    flex-shrink: 0;
+    clip-path: polygon(6px 0%, 100% 0%, calc(100% - 6px) 100%, 0% 100%);
+  }
+  .level-text h4 {
+    font-family: 'Orbitron', monospace;
+    font-size: 0.85rem;
+    color: #fff;
+    margin-bottom: 6px;
+    letter-spacing: 1px;
+  }
+  .level-text p { font-size: 0.9rem; color: var(--text-dim); line-height: 1.6; }
+
+  /* PRODUCTS */
+  .products-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 20px;
+    max-width: 1200px; margin: 0 auto;
+  }
+  .product-card {
+    background: var(--bg2);
+    border: 1px solid rgba(0,170,255,0.1);
+    overflow: hidden;
+    transition: transform 0.3s, border-color 0.3s;
+    position: relative;
+  }
+  .product-card:hover { transform: translateY(-6px); border-color: rgba(0,170,255,0.35); }
+  .product-img {
+    width: 100%; height: 200px;
+    background:
+      radial-gradient(circle at 50% 38%, rgba(0,229,255,0.13), transparent 58%),
+      linear-gradient(145deg, rgba(0,170,255,0.1), rgba(255,255,255,0.025));
+    display: flex; align-items: center; justify-content: center;
+    position: relative;
+    overflow: hidden;
+    isolation: isolate;
+  }
+  .product-img img {
+    width: 88%;
+    height: 92%;
+    object-fit: contain;
+    display: block;
+    position: relative;
+    z-index: 1;
+  }
+  .product-img::after {
+    content: '';
+    position: absolute; bottom: 0; left: 0; right: 0;
+    height: 40%;
+    background: linear-gradient(transparent, rgba(8,15,24,0.78));
+    pointer-events: none;
+    z-index: 0;
+  }
+  .product-badge {
+    position: absolute; top: 12px; right: 12px;
+    z-index: 2;
+    background: rgba(0,170,255,0.15);
+    border: 1px solid var(--blue);
+    color: var(--blue);
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.6rem;
+    letter-spacing: 1px;
+    padding: 4px 10px;
+  }
+  .product-info { padding: 20px; }
+  .product-name {
+    font-family: 'Orbitron', monospace;
+    font-size: 0.85rem;
+    color: #fff;
+    margin-bottom: 8px;
+    font-weight: 700;
+    letter-spacing: 1px;
+  }
+  .product-price {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 1.1rem;
+    color: var(--accent);
+  }
+  .product-price del { color: var(--text-dim); font-size: 0.85rem; margin-right: 8px; }
+  .product-btn {
+    display: block; width: 100%;
+    margin-top: 14px;
+    background: transparent;
+    border: 1px solid rgba(0,170,255,0.3);
+    color: var(--blue);
+    font-family: 'Orbitron', monospace;
+    font-size: 0.65rem;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    padding: 10px;
+    cursor: none;
+    transition: all 0.3s;
+    text-decoration: none;
+    text-align: center;
+  }
+  .product-btn:hover { background: rgba(0,170,255,0.1); border-color: var(--blue); }
+
+  /* WHY US */
+  .why-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 20px;
+    max-width: 1100px; margin: 0 auto;
+  }
+  .why-card {
+    background: var(--bg2);
+    border-left: 3px solid var(--blue);
+    padding: 30px 28px;
+    transition: background 0.3s;
+  }
+  .why-card:hover { background: var(--bg3); }
+  .why-icon { font-size: 2rem; margin-bottom: 16px; }
+  .why-title {
+    font-family: 'Orbitron', monospace;
+    font-size: 0.85rem;
+    color: #fff;
+    font-weight: 700;
+    margin-bottom: 10px;
+    letter-spacing: 1px;
+  }
+  .why-desc { font-size: 0.9rem; color: var(--text-dim); line-height: 1.6; }
+
+  /* CONTACT */
+  .contact-section { background: var(--bg2); }
+  .contact-inner {
+    max-width: 900px; margin: 0 auto;
+    display: grid; grid-template-columns: 1fr 1fr; gap: 60px;
+    align-items: start;
+  }
+  .contact-info h3 {
+    font-family: 'Orbitron', monospace;
+    font-size: 1.2rem;
+    color: #fff;
+    margin-bottom: 30px;
+    font-weight: 700;
+    letter-spacing: 1px;
+  }
+  .contact-item {
+    display: flex; gap: 16px; align-items: center;
+    margin-bottom: 20px;
+    padding: 16px;
+    background: var(--bg3);
+    border: 1px solid rgba(0,170,255,0.1);
+    transition: border-color 0.3s;
+  }
+  .contact-item:hover { border-color: rgba(0,170,255,0.35); }
+  .contact-item-icon { font-size: 1.5rem; flex-shrink: 0; }
+  .contact-item-text { font-size: 0.9rem; color: var(--text-dim); }
+  .contact-item-text strong { color: var(--blue); font-size: 0.75rem; letter-spacing: 2px; text-transform: uppercase; display: block; margin-bottom: 4px; font-family: 'Share Tech Mono', monospace; }
+  .contact-form { display: flex; flex-direction: column; gap: 16px; }
+  .form-group { position: relative; }
+  .form-group input,
+  .form-group textarea,
+  .form-group select {
+    width: 100%;
+    background: var(--bg3);
+    border: 1px solid rgba(0,170,255,0.15);
+    color: var(--text);
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 1rem;
+    padding: 14px 18px;
+    outline: none;
+    transition: border-color 0.3s, box-shadow 0.3s;
+    cursor: none;
+    appearance: none;
+  }
+  .form-group input:focus,
+  .form-group textarea:focus,
+  .form-group select:focus {
+    border-color: var(--blue);
+    box-shadow: 0 0 20px rgba(0,170,255,0.1);
+  }
+  .form-group textarea { resize: vertical; min-height: 120px; }
+  .form-group label {
+    position: absolute; top: -10px; left: 14px;
+    background: var(--bg2);
+    color: var(--blue);
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 2px;
+    padding: 0 6px;
+    text-transform: uppercase;
+  }
+  .form-submit {
+    background: linear-gradient(135deg, var(--blue-dark), var(--blue));
+    border: none;
+    color: #fff;
+    font-family: 'Orbitron', monospace;
+    font-weight: 700;
+    font-size: 0.75rem;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    padding: 18px;
+    cursor: none;
+    transition: all 0.3s;
+    clip-path: polygon(10px 0%, 100% 0%, calc(100% - 10px) 100%, 0% 100%);
+    position: relative;
+    overflow: hidden;
+  }
+  .form-submit::before {
+    content: '';
+    position: absolute; top: 0; left: -100%;
+    width: 100%; height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.15), transparent);
+    transition: left 0.5s;
+  }
+  .form-submit:hover::before { left: 100%; }
+  .form-submit:hover { box-shadow: 0 0 40px rgba(0,170,255,0.5); }
+
+  /* WHATSAPP BUTTON */
+  .whatsapp-float {
+    position: fixed; bottom: 30px; right: 30px;
+    z-index: 200;
+    display: flex; align-items: center; gap: 12px;
+    background: linear-gradient(135deg, #128C7E, #25D366);
+    color: #fff;
+    text-decoration: none;
+    padding: 14px 22px;
+    font-family: 'Orbitron', monospace;
+    font-weight: 700;
+    font-size: 0.7rem;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    box-shadow: 0 0 30px rgba(37,211,102,0.4), 0 4px 20px rgba(0,0,0,0.4);
+    animation: floatPulse 3s ease-in-out infinite;
+    clip-path: polygon(12px 0%, 100% 0%, calc(100% - 12px) 100%, 0% 100%);
+    cursor: none;
+    transition: transform 0.3s, box-shadow 0.3s;
+  }
+  .whatsapp-float:hover {
+    transform: translateY(-4px) scale(1.05);
+    box-shadow: 0 0 50px rgba(37,211,102,0.6), 0 8px 30px rgba(0,0,0,0.4);
+  }
+  @keyframes floatPulse {
+    0%, 100% { box-shadow: 0 0 30px rgba(37,211,102,0.4), 0 4px 20px rgba(0,0,0,0.4); }
+    50% { box-shadow: 0 0 50px rgba(37,211,102,0.7), 0 4px 20px rgba(0,0,0,0.4); }
+  }
+  .whatsapp-icon { font-size: 1.4rem; }
+
+  /* FOOTER */
+  footer {
+    background: var(--bg);
+    border-top: 1px solid rgba(0,170,255,0.1);
+    padding: 50px 40px 30px;
+    text-align: center;
+  }
+  .footer-logo {
+    font-family: 'Orbitron', monospace;
+    font-weight: 900;
+    font-size: 1.4rem;
+    letter-spacing: 3px;
+    margin-bottom: 16px;
+    background: linear-gradient(90deg, #fff, var(--blue-glow));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  .footer-tagline {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.75rem;
+    letter-spacing: 4px;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    margin-bottom: 30px;
+  }
+  .footer-divider {
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(0,170,255,0.2), transparent);
+    margin: 30px 0 24px;
+  }
+  .footer-copy { font-size: 0.8rem; color: rgba(123,168,200,0.5); letter-spacing: 1px; }
+
+  /* SCROLL ANIMATIONS */
+  .fade-in {
+    opacity: 0;
+    transform: translateY(40px);
+    transition: opacity 0.7s ease, transform 0.7s ease;
+  }
+  .fade-in.visible { opacity: 1; transform: translateY(0); }
+  .fade-in:nth-child(2) { transition-delay: 0.1s; }
+  .fade-in:nth-child(3) { transition-delay: 0.2s; }
+  .fade-in:nth-child(4) { transition-delay: 0.3s; }
+
+  /* SCANLINE */
+  .scanline {
+    position: fixed; top: 0; left: 0; right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, transparent, var(--blue), transparent);
+    animation: scanMove 6s linear infinite;
+    z-index: 50;
+    opacity: 0.3;
+    pointer-events: none;
+  }
+  @keyframes scanMove {
+    0% { top: -3px; }
+    100% { top: 100vh; }
+  }
+
+  /* MOBILE */
+  @media (max-width: 768px) {
+    nav { padding: 0 20px; }
+    .nav-links { display: none; }
+    .hero { padding: 100px 20px 60px; }
+    section { padding: 70px 20px; }
+    .motherboard-inner { grid-template-columns: 1fr; gap: 40px; }
+    .contact-inner { grid-template-columns: 1fr; gap: 40px; }
+    .whatsapp-float { bottom: 20px; right: 20px; padding: 12px 16px; font-size: 0; }
+    .whatsapp-float .whatsapp-text { display: none; }
+    .whatsapp-float { clip-path: none; border-radius: 50%; width: 60px; height: 60px; justify-content: center; }
+    body { cursor: auto; }
+    .cursor, .cursor-ring { display: none; }
+  }
+
+  /* GLITCH */
+  @keyframes glitch1 {
+    0%, 100% { clip-path: inset(0 0 95% 0); transform: translateX(-3px); }
+    20% { clip-path: inset(30% 0 50% 0); transform: translateX(3px); }
+    40% { clip-path: inset(70% 0 5% 0); transform: translateX(-1px); }
+    60% { clip-path: inset(15% 0 75% 0); transform: translateX(2px); }
+    80% { clip-path: inset(55% 0 25% 0); transform: translateX(-2px); }
+  }
+  .glitch-wrap { position: relative; display: inline-block; }
+  .glitch-wrap::before,
+  .glitch-wrap::after {
+    content: attr(data-text);
+    position: absolute; inset: 0;
+    font-family: inherit; font-weight: inherit; font-size: inherit;
+    -webkit-text-fill-color: transparent;
+  }
+  .glitch-wrap::before {
+    background: linear-gradient(90deg, #ff0066, #ff0066);
+    -webkit-background-clip: text;
+    animation: glitch1 4s 2s infinite;
+    opacity: 0.6;
+  }
+  .glitch-wrap::after {
+    background: linear-gradient(90deg, var(--blue), var(--blue));
+    -webkit-background-clip: text;
+    animation: glitch1 4s 2.5s infinite reverse;
+    opacity: 0.5;
+  }
+</style>
+</head>
+<body>
+
+<div class="cursor" id="cursor"></div>
+<div class="cursor-ring" id="cursorRing"></div>
+<div class="scanline"></div>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">Tech<span>Lab</span> Carolina</div>
+  <ul class="nav-links">
+    <li><a href="#servizi">Servizi</a></li>
+    <li><a href="#scheda-madre">Scheda Madre</a></li>
+    <li><a href="#prodotti">Prodotti</a></li>
+    <li><a href="#contatti">Contatti</a></li>
+  </ul>
+  <a href="https://wa.me/393668220227" class="nav-cta" target="_blank">Contattaci</a>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-grid"></div>
+  <div class="hero-glow"></div>
+  <div class="hero-content">
+    <div class="hero-eyebrow">// Tecnologia. Precisione. Passione.</div>
+    <h1 class="hero-title">
+      <div class="white">TECH</div>
+      <div class="glitch-wrap blue" data-text="LAB CAROLINA">LAB CAROLINA</div>
+    </h1>
+    <div class="hero-sub">Riparazioni Professionali</div>
+    <p class="hero-desc">
+      Riparazioni cellulari rapide e affidabili, vendita di smartphone ricondizionati e riparazioni di terzo livello su scheda madre. Tecnologia avanzata, diagnosi precisa, risultati garantiti.
+    </p>
+    <div class="hero-btns">
+      <a href="https://wa.me/393668220227" class="btn-primary" target="_blank">
+        <span>💬</span> Prenota Riparazione
+      </a>
+      <a href="#servizi" class="btn-secondary">
+        <span>⚡</span> Scopri i Servizi
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- STATS -->
+<div class="stats-bar">
+  <div class="stat-item">
+    <span class="stat-num" data-target="500">0</span>
+    <span class="stat-label">Riparazioni Eseguite</span>
+  </div>
+  <div class="stat-item">
+    <span class="stat-num" data-target="3">0</span>
+    <span class="stat-label">Livelli di Riparazione</span>
+  </div>
+  <div class="stat-item">
+    <span class="stat-num" data-target="24">0</span>
+    <span class="stat-label">Ore Turnaround</span>
+  </div>
+  <div class="stat-item">
+    <span class="stat-num" data-target="100">0</span>
+    <span class="stat-label">% Clienti Soddisfatti</span>
+  </div>
+</div>
+
+<!-- SERVICES -->
+<section id="servizi">
+  <div class="section-header">
+    <span class="section-tag">// 01 — Servizi</span>
+    <h2 class="section-title">Cosa <span>Facciamo</span></h2>
+    <div class="section-line"></div>
+  </div>
+  <div class="services-grid">
+    <div class="service-card fade-in">
+      <span class="service-num">01</span>
+      <span class="service-icon">📱</span>
+      <h3 class="service-title">Riparazioni Cellulari</h3>
+      <p class="service-desc">Sostituzione display, batteria, connettori di ricarica, fotocamere e molto altro. Riparazioni rapide con ricambi di qualità certificata.</p>
+      <div class="service-tags">
+        <span class="service-tag">Display</span>
+        <span class="service-tag">Batteria</span>
+        <span class="service-tag">Fotocamera</span>
+        <span class="service-tag">Jack</span>
+      </div>
+    </div>
+    <div class="service-card fade-in">
+      <span class="service-num">02</span>
+      <span class="service-icon">🔧</span>
+      <h3 class="service-title">Riparazione Scheda Madre</h3>
+      <p class="service-desc">Diagnosi e riparazione di terzo livello su scheda madre. Microsaldatura, reballing BGA, sostituzione IC e componenti SMD con strumentazione professionale.</p>
+      <div class="service-tags">
+        <span class="service-tag">Microsaldatura</span>
+        <span class="service-tag">BGA</span>
+        <span class="service-tag">IC Chip</span>
+        <span class="service-tag">SMD</span>
+      </div>
+    </div>
+    <div class="service-card fade-in">
+      <span class="service-num">03</span>
+      <span class="service-icon">🛒</span>
+      <h3 class="service-title">Vendita Cellulari</h3>
+      <p class="service-desc">Smartphone ricondizionati e nuovi a prezzi competitivi. Ogni dispositivo è testato e garantito. iPhone, Samsung, Xiaomi e altri brand disponibili.</p>
+      <div class="service-tags">
+        <span class="service-tag">iPhone</span>
+        <span class="service-tag">Samsung</span>
+        <span class="service-tag">Xiaomi</span>
+        <span class="service-tag">Garantiti</span>
+      </div>
+    </div>
+    <div class="service-card fade-in">
+      <span class="service-num">04</span>
+      <span class="service-icon">🎧</span>
+      <h3 class="service-title">Vendita Accessori</h3>
+      <p class="service-desc">Cover, protezioni display, caricatori, cuffie e accessori originali e compatibili per tutti i dispositivi. Ampia selezione disponibile in negozio.</p>
+      <div class="service-tags">
+        <span class="service-tag">Cover</span>
+        <span class="service-tag">Caricatori</span>
+        <span class="service-tag">Vetri</span>
+        <span class="service-tag">Cuffie</span>
+      </div>
+    </div>
+    <div class="service-card fade-in">
+      <span class="service-num">05</span>
+      <span class="service-icon">💻</span>
+      <h3 class="service-title">Assistenza Tecnica</h3>
+      <p class="service-desc">Diagnosi gratuita per ogni dispositivo. Assistenza su smartphone e tablet di tutte le marche. Consulenza professionale e preventivi senza impegno.</p>
+      <div class="service-tags">
+        <span class="service-tag">Diagnosi Free</span>
+        <span class="service-tag">Tablet</span>
+        <span class="service-tag">Consulenza</span>
+      </div>
+    </div>
+    <div class="service-card fade-in">
+      <span class="service-num">06</span>
+      <span class="service-icon">⚡</span>
+      <h3 class="service-title">Riparazioni Express</h3>
+      <p class="service-desc">Servizio rapido: molte riparazioni completate in 30-60 minuti. Perché il tuo tempo è prezioso quanto il tuo dispositivo.</p>
+      <div class="service-tags">
+        <span class="service-tag">30 Min</span>
+        <span class="service-tag">Same Day</span>
+        <span class="service-tag">Express</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- MOTHERBOARD -->
+<section id="scheda-madre" class="motherboard-section">
+  <div class="motherboard-inner">
+    <div class="motherboard-visual">
+      <svg viewBox="0 0 400 400" class="mb-circuit">
+        <defs>
+          <filter id="glow">
+            <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+            <feMerge><feMergeNode in="coloredBlur"/><feMergeNode in="SourceGraphic"/></feMerge>
+          </filter>
+          <radialGradient id="boardGrad" cx="50%" cy="50%" r="50%">
+            <stop offset="0%" stop-color="#0d2a3d"/>
+            <stop offset="100%" stop-color="#050a10"/>
+          </radialGradient>
+        </defs>
+        <!-- Board -->
+        <rect width="400" height="400" fill="url(#boardGrad)" rx="8"/>
+        <!-- Grid lines -->
+        <g stroke="rgba(0,170,255,0.08)" stroke-width="0.5">
+          <line x1="0" y1="80" x2="400" y2="80"/>
+          <line x1="0" y1="160" x2="400" y2="160"/>
+          <line x1="0" y1="240" x2="400" y2="240"/>
+          <line x1="0" y1="320" x2="400" y2="320"/>
+          <line x1="80" y1="0" x2="80" y2="400"/>
+          <line x1="160" y1="0" x2="160" y2="400"/>
+          <line x1="240" y1="0" x2="240" y2="400"/>
+          <line x1="320" y1="0" x2="320" y2="400"/>
+        </g>
+        <!-- Traces -->
+        <g stroke="rgba(0,170,255,0.3)" stroke-width="1.5" fill="none" filter="url(#glow)">
+          <polyline points="40,200 100,200 100,120 200,120"/>
+          <polyline points="200,120 280,120 280,200 360,200"/>
+          <polyline points="200,280 200,200 120,200 120,280 200,280"/>
+          <polyline points="200,200 200,120"/>
+          <polyline points="80,80 80,160 160,160"/>
+          <polyline points="320,80 320,160 240,160"/>
+          <polyline points="80,320 80,240 160,240"/>
+          <polyline points="320,320 320,240 240,240"/>
+        </g>
+        <!-- Chips -->
+        <g filter="url(#glow)">
+          <rect x="160" y="160" width="80" height="80" fill="rgba(0,100,180,0.3)" stroke="rgba(0,170,255,0.8)" stroke-width="1.5" rx="3"/>
+          <text x="200" y="196" text-anchor="middle" fill="rgba(0,207,255,0.9)" font-family="Share Tech Mono" font-size="9" letter-spacing="1">CPU</text>
+          <text x="200" y="210" text-anchor="middle" fill="rgba(0,170,255,0.6)" font-family="Share Tech Mono" font-size="7">A15</text>
+          <!-- Legs -->
+          <g stroke="rgba(0,170,255,0.5)" stroke-width="1">
+            <line x1="160" y1="170" x2="148" y2="170"/>
+            <line x1="160" y1="182" x2="148" y2="182"/>
+            <line x1="160" y1="194" x2="148" y2="194"/>
+            <line x1="160" y1="206" x2="148" y2="206"/>
+            <line x1="160" y1="218" x2="148" y2="218"/>
+            <line x1="160" y1="230" x2="148" y2="230"/>
+            <line x1="240" y1="170" x2="252" y2="170"/>
+            <line x1="240" y1="182" x2="252" y2="182"/>
+            <line x1="240" y1="194" x2="252" y2="194"/>
+            <line x1="240" y1="206" x2="252" y2="206"/>
+            <line x1="240" y1="218" x2="252" y2="218"/>
+            <line x1="240" y1="230" x2="252" y2="230"/>
+          </g>
+        </g>
+        <!-- Small chips -->
+        <g filter="url(#glow)">
+          <rect x="55" y="55" width="40" height="30" fill="rgba(0,80,140,0.3)" stroke="rgba(0,170,255,0.5)" stroke-width="1" rx="2"/>
+          <text x="75" y="73" text-anchor="middle" fill="rgba(0,170,255,0.7)" font-family="Share Tech Mono" font-size="7">PMIC</text>
+          <rect x="305" y="55" width="40" height="30" fill="rgba(0,80,140,0.3)" stroke="rgba(0,170,255,0.5)" stroke-width="1" rx="2"/>
+          <text x="325" y="73" text-anchor="middle" fill="rgba(0,170,255,0.7)" font-family="Share Tech Mono" font-size="7">RAM</text>
+          <rect x="55" y="315" width="40" height="30" fill="rgba(0,80,140,0.3)" stroke="rgba(0,170,255,0.5)" stroke-width="1" rx="2"/>
+          <text x="75" y="333" text-anchor="middle" fill="rgba(0,170,255,0.7)" font-family="Share Tech Mono" font-size="7">NAND</text>
+          <rect x="305" y="315" width="40" height="30" fill="rgba(0,80,140,0.3)" stroke="rgba(0,170,255,0.5)" stroke-width="1" rx="2"/>
+          <text x="325" y="333" text-anchor="middle" fill="rgba(0,170,255,0.7)" font-family="Share Tech Mono" font-size="7">WiFi</text>
+        </g>
+        <!-- Capacitors/Resistors -->
+        <g fill="rgba(0,170,255,0.6)" filter="url(#glow)">
+          <rect x="140" y="100" width="8" height="4" rx="1"/>
+          <rect x="156" y="100" width="8" height="4" rx="1"/>
+          <rect x="240" y="100" width="8" height="4" rx="1"/>
+          <rect x="256" y="100" width="8" height="4" rx="1"/>
+          <rect x="100" y="190" width="4" height="8" rx="1"/>
+          <rect x="100" y="204" width="4" height="8" rx="1"/>
+          <rect x="296" y="190" width="4" height="8" rx="1"/>
+          <rect x="296" y="204" width="4" height="8" rx="1"/>
+          <rect x="140" y="296" width="8" height="4" rx="1"/>
+          <rect x="156" y="296" width="8" height="4" rx="1"/>
+          <rect x="240" y="296" width="8" height="4" rx="1"/>
+          <rect x="256" y="296" width="8" height="4" rx="1"/>
+        </g>
+        <!-- Laser point animation -->
+        <circle cx="200" cy="200" r="4" fill="rgba(0,207,255,0.9)" filter="url(#glow)">
+          <animate attributeName="r" values="4;8;4" dur="2s" repeatCount="indefinite"/>
+          <animate attributeName="opacity" values="0.9;0.3;0.9" dur="2s" repeatCount="indefinite"/>
+        </circle>
+        <!-- Scan line -->
+        <line x1="0" y1="0" x2="400" y2="0" stroke="rgba(0,207,255,0.4)" stroke-width="2">
+          <animateTransform attributeName="transform" type="translate" values="0,0;0,400" dur="3s" repeatCount="indefinite"/>
+        </line>
+      </svg>
+    </div>
+    <div class="motherboard-content">
+      <div class="section-header">
+        <span class="section-tag">// 02 — Specializzazione</span>
+        <h2 class="section-title">Riparazioni di<br><span>3° Livello</span></h2>
+        <div class="section-line"></div>
+      </div>
+      <p style="color: var(--text-dim); line-height: 1.7; font-size: 1rem;">
+        Offriamo riparazioni avanzate su scheda madre con strumentazione professionale: microscopio a stereo zoom, stazione di saldatura hot air, e attrezzatura per microsaldatura SMD.
+      </p>
+      <ul class="level-list">
+        <li class="level-item">
+          <span class="level-badge">LV.1</span>
+          <div class="level-text">
+            <h4>Riparazioni Standard</h4>
+            <p>Sostituzione componenti accessibili: display, batteria, connettori, altoparlanti, fotocamere.</p>
+          </div>
+        </li>
+        <li class="level-item">
+          <span class="level-badge">LV.2</span>
+          <div class="level-text">
+            <h4>Riparazioni Intermedie</h4>
+            <p>Diagnosi circuitale, sostituzione connettori sulla scheda, riparazione danni da liquidi.</p>
+          </div>
+        </li>
+        <li class="level-item">
+          <span class="level-badge">LV.3</span>
+          <div class="level-text">
+            <h4>Riparazioni Avanzate su Scheda Madre</h4>
+            <p>Microsaldatura, reballing e sostituzione IC BGA, chip NAND, PMIC, chip WiFi/Bluetooth, CPU companion chip.</p>
+          </div>
+        </li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- PRODUCTS -->
+<section id="prodotti">
+  <div class="section-header">
+    <span class="section-tag">// 03 — Dispositivi</span>
+    <h2 class="section-title">Cellulari in <span>Vendita</span></h2>
+    <div class="section-line"></div>
+  </div>
+  <div class="products-grid">
+    <div class="product-card fade-in">
+      <div class="product-img">
+        <img src="tele12proc.png" alt="iPhone 12 Pro in vendita">
+        <span class="product-badge">OFFERTA</span>
+      </div>
+      <div class="product-info">
+        <div class="product-name">iPhone 12 Pro</div>
+        <div class="product-price"><del>350,00 €</del>290,00 €</div>
+        <a href="https://wa.me/393668220227?text=Ciao,%20sono%20interessato%20all'iPhone%2012" class="product-btn" target="_blank">Richiedi Info</a>
+      </div>
+    </div>
+    <div class="product-card fade-in">
+      <div class="product-img">
+        <img src="iphone13.png" alt="iPhone 13 in vendita">
+        <span class="product-badge">DISPONIBILE</span>
+      </div>
+      <div class="product-info">
+        <div class="product-name">iPhone 13</div>
+        <div class="product-price">310,00 €</div>
+        <a href="https://wa.me/393668220227?text=Ciao,%20sono%20interessato%20all'iPhone%2013" class="product-btn" target="_blank">Richiedi Info</a>
+      </div>
+    </div>
+    <div class="product-card fade-in">
+      <div class="product-img">
+        <img src="tele16-removebg-preview.png" alt="iPhone 16 in vendita">
+        <span class="product-badge">DISPONIBILE</span>
+      </div>
+      <div class="product-info">
+        <div class="product-name">iPhone 16</div>
+        <div class="product-price">459,00 €</div>
+        <a href="https://wa.me/393668220227?text=Ciao,%20sono%20interessato%20al%20iPhone%2016%20" class="product-btn" target="_blank">Richiedi Info</a>
+      </div>
+    </div>
+    <div class="product-card fade-in">
+      <div class="product-img">
+        <img src="er15-removebg-preview.png" alt="iPhone 15 256gb in vendita">
+        <span class="product-badge">HOT</span>
+      </div>
+      <div class="product-info">
+        <div class="product-name">iPhone 15 256gb</div>
+        <div class="product-price">450,00 €</div>
+        <a href="https://wa.me/393668220227?text=Ciao,%20sono%20interessato%20al%20iPhone%2015%20256gb%20" class="product-btn" target="_blank">Richiedi Info</a>
+      </div>
+    </div>
+  </div>
+  <div style="text-align:center;margin-top:40px;">
+    <a href="https://wa.me/393668220227?text=Ciao,%20vorrei%20sapere%20quali%20dispositivi%20avete%20disponibili" class="btn-primary" target="_blank" style="display:inline-flex;">
+      <span>📲</span> Vedi Tutti i Dispositivi
+    </a>
+  </div>
+</section>
+
+<!-- WHY US -->
+<section style="background:var(--bg2); border-top:1px solid rgba(0,170,255,0.1); border-bottom:1px solid rgba(0,170,255,0.1);">
+  <div class="section-header">
+    <span class="section-tag">// 04 — Perché Noi</span>
+    <h2 class="section-title">Veloci. Affidabili. <span>Convenienti.</span></h2>
+    <div class="section-line"></div>
+  </div>
+  <div class="why-grid">
+    <div class="why-card fade-in">
+      <div class="why-icon">⚡</div>
+      <div class="why-title">Rapidità</div>
+      <p class="why-desc">Molte riparazioni completate in 30-60 minuti. Il tuo dispositivo torna operativo il prima possibile.</p>
+    </div>
+    <div class="why-card fade-in">
+      <div class="why-icon">🔬</div>
+      <div class="why-title">Strumentazione Pro</div>
+      <p class="why-desc">Utilizziamo attrezzatura professionale: microscopio, stazioni hot air e ultrasuoni per diagnosi precise.</p>
+    </div>
+    <div class="why-card fade-in">
+      <div class="why-icon">🛡️</div>
+      <div class="why-title">Garanzia</div>
+      <p class="why-desc">Tutte le riparazioni sono garantite. Ricambi di qualità certificata per la massima affidabilità nel tempo.</p>
+    </div>
+    <div class="why-card fade-in">
+      <div class="why-icon">💰</div>
+      <div class="why-title">Prezzi Onesti</div>
+      <p class="why-desc">Preventivo gratuito senza impegno. Prezzi trasparenti e competitivi, nessun costo nascosto.</p>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section id="contatti" class="contact-section">
+  <div class="section-header">
+    <span class="section-tag">// 05 — Contatti</span>
+    <h2 class="section-title">Contattaci <span>Ora</span></h2>
+    <div class="section-line"></div>
+  </div>
+  <div class="contact-inner">
+    <div class="contact-info">
+      <h3>Dove Siamo</h3>
+      <div class="contact-item">
+        <span class="contact-item-icon">📞</span>
+        <div class="contact-item-text">
+          <strong>Telefono / WhatsApp</strong>
+          <a href="tel:3668220227" style="color:var(--text);text-decoration:none;">366 822 0227</a>
+        </div>
+      </div>
+      <div class="contact-item">
+        <span class="contact-item-icon">💬</span>
+        <div class="contact-item-text">
+          <strong>WhatsApp</strong>
+          <a href="https://wa.me/393668220227" target="_blank" style="color:var(--blue);text-decoration:none;">Scrivici su WhatsApp →</a>
+        </div>
+      </div>
+      <div class="contact-item">
+        <span class="contact-item-icon">🌐</span>
+        <div class="contact-item-text">
+          <strong>Sito Web</strong>
+          techlabcarolina.it
+        </div>
+      </div>
+      <div class="contact-item">
+        <span class="contact-item-icon">🕐</span>
+        <div class="contact-item-text">
+          <strong>Orari</strong>
+          Lun–Ven: 9/13 – 16/19
+        </div>
+      </div>
+      <a href="https://wa.me/393668220227" class="btn-primary" target="_blank" style="display:inline-flex;margin-top:10px;">
+        <span>💬</span> WhatsApp Diretto
+      </a>
+    </div>
+    <div class="contact-form">
+      <div class="form-group">
+        <label>Nome</label>
+        <input type="text" placeholder="Il tuo nome">
+      </div>
+      <div class="form-group">
+        <label>Telefono</label>
+        <input type="tel" placeholder="Il tuo numero">
+      </div>
+      <div class="form-group">
+        <label>Servizio</label>
+        <select>
+          <option value="">Seleziona servizio...</option>
+          <option>Riparazione Display</option>
+          <option>Sostituzione Batteria</option>
+          <option>Riparazione Scheda Madre</option>
+          <option>Acquisto Dispositivo</option>
+          <option>Assistenza Tecnica Generica</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Messaggio</label>
+        <textarea placeholder="Descrivi il problema o la richiesta..."></textarea>
+      </div>
+      <button class="form-submit" onclick="sendWhatsApp()">Invia Messaggio → WhatsApp</button>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-logo">TechLab Carolina</div>
+  <div class="footer-tagline">Tecnologia · Precisione · Passione</div>
+  <div style="display:flex;justify-content:center;gap:30px;flex-wrap:wrap;margin-bottom:20px;">
+    <a href="#servizi" style="color:var(--text-dim);text-decoration:none;font-size:0.8rem;letter-spacing:2px;text-transform:uppercase;">Servizi</a>
+    <a href="#scheda-madre" style="color:var(--text-dim);text-decoration:none;font-size:0.8rem;letter-spacing:2px;text-transform:uppercase;">Scheda Madre</a>
+    <a href="#prodotti" style="color:var(--text-dim);text-decoration:none;font-size:0.8rem;letter-spacing:2px;text-transform:uppercase;">Prodotti</a>
+    <a href="#contatti" style="color:var(--text-dim);text-decoration:none;font-size:0.8rem;letter-spacing:2px;text-transform:uppercase;">Contatti</a>
+  </div>
+  <div class="footer-divider"></div>
+  <div class="footer-copy">Sito progettato da @iltuositoin24h -> TikTok/Instagram </div>
+</footer>
+
+<!-- WHATSAPP FLOAT -->
+<a href="https://wa.me/393668220227" class="whatsapp-float" target="_blank" aria-label="Contattaci su WhatsApp">
+  <span class="whatsapp-icon">💬</span>
+  <span class="whatsapp-text">WhatsApp</span>
+</a>
+
+<script>
+  // CUSTOM CURSOR
+  const cursor = document.getElementById('cursor');
+  const ring = document.getElementById('cursorRing');
+  let mx = 0, my = 0, rx = 0, ry = 0;
+  document.addEventListener('mousemove', e => { mx = e.clientX; my = e.clientY; });
+  function animCursor() {
+    cursor.style.left = mx + 'px'; cursor.style.top = my + 'px';
+    rx += (mx - rx) * 0.12; ry += (my - ry) * 0.12;
+    ring.style.left = rx + 'px'; ring.style.top = ry + 'px';
+    requestAnimationFrame(animCursor);
+  }
+  animCursor();
+  document.querySelectorAll('a, button, .service-card, .product-card, .why-card').forEach(el => {
+    el.addEventListener('mouseenter', () => { cursor.classList.add('hover'); ring.classList.add('hover'); });
+    el.addEventListener('mouseleave', () => { cursor.classList.remove('hover'); ring.classList.remove('hover'); });
+  });
+
+  // COUNTER ANIMATION
+  function animateCounter(el, target) {
+    let start = 0;
+    const duration = 2000;
+    const step = timestamp => {
+      if (!start) start = timestamp;
+      const progress = Math.min((timestamp - start) / duration, 1);
+      const eased = 1 - Math.pow(1 - progress, 3);
+      el.textContent = Math.floor(eased * target) + (el.dataset.suffix || '');
+      if (progress < 1) requestAnimationFrame(step);
+      else el.textContent = target + (el.dataset.suffix || '');
+    };
+    requestAnimationFrame(step);
+  }
+
+  // INTERSECTION OBSERVER
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+        // Counter
+        if (entry.target.dataset.target) {
+          animateCounter(entry.target, parseInt(entry.target.dataset.target));
+          observer.unobserve(entry.target);
+        }
+      }
+    });
+  }, { threshold: 0.15 });
+
+  document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+  document.querySelectorAll('[data-target]').forEach(el => observer.observe(el));
+
+  // FORM → WHATSAPP
+  function sendWhatsApp() {
+    const nome = document.querySelector('input[type="text"]').value || 'Cliente';
+    const tel = document.querySelector('input[type="tel"]').value || '';
+    const servizio = document.querySelector('select').value || 'Informazioni';
+    const msg = document.querySelector('textarea').value || '';
+    const text = `Ciao TechLab Carolina! Sono ${nome}${tel ? ' ('+tel+')' : ''}.\nServizio: ${servizio}\n${msg ? 'Messaggio: '+msg : ''}`;
+    window.open('https://wa.me/393668220227?text=' + encodeURIComponent(text), '_blank');
+  }
+
+  // PARALLAX HERO GLOW
+  document.addEventListener('mousemove', e => {
+    const glow = document.querySelector('.hero-glow');
+    if (!glow) return;
+    const xPct = e.clientX / window.innerWidth;
+    const yPct = e.clientY / window.innerHeight;
+    glow.style.left = (40 + xPct * 30) + '%';
+    glow.style.top = (30 + yPct * 30) + '%';
+  });
+
+  // NAVBAR SCROLL
+  window.addEventListener('scroll', () => {
+    const nav = document.querySelector('nav');
+    nav.style.borderBottomColor = window.scrollY > 50 ? 'rgba(0,170,255,0.3)' : 'rgba(0,170,255,0.15)';
+  });
+</script>
+</body>
+</html>
